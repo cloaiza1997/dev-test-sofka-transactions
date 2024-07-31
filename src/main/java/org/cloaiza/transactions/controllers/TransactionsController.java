@@ -1,6 +1,7 @@
 package org.cloaiza.transactions.controllers;
 
 import io.smallrye.mutiny.Uni;
+import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -12,19 +13,41 @@ import lombok.extern.slf4j.Slf4j;
 import org.cloaiza.core.constants.CoreConstants;
 import org.cloaiza.core.dtos.HttpResponseDTO;
 import org.cloaiza.transactions.dtos.TransactionRequestCreateDTO;
+import org.cloaiza.transactions.services.TransactionService;
 
 @Slf4j
-@Path("/transactions")
+@Path("/")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class TransactionsController {
 
+    @Inject
+    TransactionService transactionService;
+
     @POST
-    public Uni<HttpResponseDTO> addTransaction(@Valid TransactionRequestCreateDTO transactionRequestCreateDTO) {
-        HttpResponseDTO response = new HttpResponseDTO(CoreConstants.TRANSACTION_CREATE_OK);
+    @Path("/v1/transactions")
+    public Uni<HttpResponseDTO> addTransactionV1(@Valid TransactionRequestCreateDTO transactionRequestCreateDTO) {
 
-        log.info(CoreConstants.TRANSACTION_CREATE_OK);
+        return transactionService
+                .addTransactionV1(transactionRequestCreateDTO.getTransaction())
+                .onItem()
+                .transform(result -> {
+                    log.info(CoreConstants.TRANSACTION_CREATE_OK);
 
-        return Uni.createFrom().item(response);
+                    return new HttpResponseDTO(CoreConstants.TRANSACTION_CREATE_OK);
+                });
+    }
+
+    @POST
+    @Path("/v2/transactions")
+    public Uni<HttpResponseDTO> addTransactionV2(@Valid TransactionRequestCreateDTO transactionRequestCreateDTO) {
+        return transactionService
+                .addTransactionV2(transactionRequestCreateDTO.getTransaction())
+                .onItem()
+                .transform(result -> {
+                    log.info(CoreConstants.TRANSACTION_CREATE_OK + " - " + result.getId());
+
+                    return new HttpResponseDTO(CoreConstants.TRANSACTION_CREATE_OK);
+                });
     }
 }
