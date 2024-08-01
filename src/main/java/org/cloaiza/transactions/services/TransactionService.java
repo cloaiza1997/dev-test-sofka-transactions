@@ -1,6 +1,7 @@
 package org.cloaiza.transactions.services;
 
 import org.bson.Document;
+import org.cloaiza.core.utils.DateUtils;
 import org.cloaiza.transactions.dtos.TransactionDTO;
 import org.cloaiza.transactions.dtos.TransactionDailySummaryDTO;
 import org.cloaiza.transactions.mappers.TransactionMapper;
@@ -59,7 +60,17 @@ public class TransactionService {
     return transactionRepository
         .getTransactionDailySummary(summaryDate)
         .onItem()
-        .ifNotNull()
-        .call(result -> transactionDailySummaryService.addTransactionDailySummary(result));
+        .transformToUni(transactionDailySummary -> {
+
+          if (transactionDailySummary == null) {
+            transactionDailySummary = new TransactionDailySummaryDTO();
+
+            transactionDailySummary.setDate(DateUtils.getDate(summaryDate));
+            transactionDailySummary.setTotalTransactions(0);
+            transactionDailySummary.setTotalAmount(0.0);
+          }
+
+          return transactionDailySummaryService.addTransactionDailySummary(transactionDailySummary);
+        });
   }
 }

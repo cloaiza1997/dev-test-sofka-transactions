@@ -4,13 +4,13 @@ import io.quarkus.mongodb.panache.reactive.ReactivePanacheMongoRepository;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.cloaiza.core.constants.CoreConstants;
+import org.cloaiza.core.utils.DateUtils;
 import org.cloaiza.transactions.dtos.TransactionDailySummaryDTO;
 import org.cloaiza.transactions.models.Transaction;
 
@@ -53,13 +53,10 @@ public class TransactionRepository implements ReactivePanacheMongoRepository<Tra
    */
   public Uni<TransactionDailySummaryDTO> getTransactionDailySummary(String summaryDate) {
 
-    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-    Date date;
+    Date date = DateUtils.getDate(summaryDate);
 
-    try {
-      date = formatter.parse(summaryDate);
-    } catch (ParseException e) {
-      return Uni.createFrom().failure(e);
+    if (date == null) {
+      return Uni.createFrom().failure(new Error(CoreConstants.DATE_ERROR));
     }
 
     Bson match = Aggregates.match(

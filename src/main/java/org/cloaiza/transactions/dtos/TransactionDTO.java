@@ -3,6 +3,7 @@ package org.cloaiza.transactions.dtos;
 import java.util.Date;
 
 import org.bson.types.ObjectId;
+import org.cloaiza.core.constants.CoreConstants;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -18,7 +19,7 @@ public class TransactionDTO {
     @Schema(example = "123")
     private Long transactionId;
     @NotNull
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS", timezone = "America/Bogota")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS", timezone = CoreConstants.TIMEZONE)
     @Schema(example = "2024-07-03 12:34:56.789")
     private Date timestamp;
     @NotNull
