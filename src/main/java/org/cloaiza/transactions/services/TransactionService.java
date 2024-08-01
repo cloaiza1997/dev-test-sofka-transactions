@@ -1,13 +1,18 @@
 package org.cloaiza.transactions.services;
 
 import org.bson.Document;
+import org.cloaiza.core.constants.CoreConstants;
 import org.cloaiza.core.utils.DateUtils;
+import org.cloaiza.core.utils.LogUtils;
 import org.cloaiza.transactions.dtos.TransactionDTO;
 import org.cloaiza.transactions.dtos.TransactionDailySummaryDTO;
 import org.cloaiza.transactions.mappers.TransactionMapper;
 import org.cloaiza.transactions.models.Transaction;
 import org.cloaiza.transactions.repositories.TransactionRepository;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
 
 import com.mongodb.client.result.InsertOneResult;
 
@@ -26,6 +31,10 @@ public class TransactionService {
 
   @Inject
   TransactionDailySummaryService transactionDailySummaryService;
+
+  @Inject
+  @Channel("transactions-channel")
+  Emitter<String> emitter;
 
   @ConfigProperty(name = "quarkus.mongodb.database")
   private String database;
@@ -53,7 +62,13 @@ public class TransactionService {
     return transactionRepository
         .persist(transaction)
         .onItem()
-        .transform(TransactionMapper.INSTANCE::entityToDto);
+        .transform(TransactionMapper.INSTANCE::entityToDto)
+        .onItem()
+        .call(result -> {
+          sendTransaction(result);
+
+          return Uni.createFrom().item(result);
+        });
   }
 
   public Uni<TransactionDailySummaryDTO> getTransactionDailySummary(String summaryDate) {
@@ -71,6 +86,18 @@ public class TransactionService {
           }
 
           return transactionDailySummaryService.addTransactionDailySummary(transactionDailySummary);
+        });
+  }
+
+  private void sendTransaction(TransactionDTO transactionDTO) {
+    emitter
+        .send(transactionDTO.toString())
+        .whenCompleteAsync((result, throwable) -> {
+          if (throwable != null) {
+            LogUtils.error(CoreConstants.TRANSACTION_BROKER_ERROR, throwable);
+          } else {
+            LogUtils.info(CoreConstants.TRANSACTION_BROKER_OK);
+          }
         });
   }
 }

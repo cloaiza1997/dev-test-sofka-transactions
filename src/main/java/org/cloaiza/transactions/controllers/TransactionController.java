@@ -10,15 +10,14 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-import lombok.extern.slf4j.Slf4j;
 
 import org.cloaiza.core.constants.CoreConstants;
 import org.cloaiza.core.dtos.HttpResponseDTO;
+import org.cloaiza.core.utils.LogUtils;
 import org.cloaiza.transactions.dtos.TransactionRequestCreateDTO;
 import org.cloaiza.transactions.services.TransactionService;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
-@Slf4j
 @Path("/")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -35,9 +34,15 @@ public class TransactionController {
                 .addTransactionV1(transactionRequestCreateDTO.getTransaction())
                 .onItem()
                 .transform(result -> {
-                    log.info(CoreConstants.TRANSACTION_CREATE_OK);
+                    LogUtils.info(CoreConstants.TRANSACTION_CREATE_OK);
 
                     return new HttpResponseDTO(CoreConstants.TRANSACTION_CREATE_OK);
+                })
+                .onFailure()
+                .recoverWithItem(e -> {
+                    LogUtils.error(CoreConstants.TRANSACTION_CREATE_ERROR, e);
+
+                    return new HttpResponseDTO(false, CoreConstants.TRANSACTION_CREATE_ERROR);
                 });
     }
 
@@ -48,9 +53,15 @@ public class TransactionController {
                 .addTransactionV2(transactionRequestCreateDTO.getTransaction())
                 .onItem()
                 .transform(result -> {
-                    log.info(CoreConstants.TRANSACTION_CREATE_OK);
+                    LogUtils.info(CoreConstants.TRANSACTION_CREATE_OK);
 
                     return new HttpResponseDTO(result, CoreConstants.TRANSACTION_CREATE_OK);
+                })
+                .onFailure()
+                .recoverWithItem(e -> {
+                    LogUtils.error(CoreConstants.TRANSACTION_CREATE_ERROR, e);
+
+                    return new HttpResponseDTO(false, CoreConstants.TRANSACTION_CREATE_ERROR);
                 });
     }
 
@@ -67,9 +78,15 @@ public class TransactionController {
                             ? CoreConstants.TRANSACTION_SUMMARY_EMPTY
                             : CoreConstants.TRANSACTION_SUMMARY_OK;
 
-                    log.info(message);
+                    LogUtils.info(message);
 
                     return new HttpResponseDTO(result, message);
+                })
+                .onFailure()
+                .recoverWithItem(e -> {
+                    LogUtils.error(CoreConstants.TRANSACTION_SUMMARY_ERROR, e);
+
+                    return new HttpResponseDTO(false, CoreConstants.TRANSACTION_SUMMARY_ERROR);
                 });
     }
 }

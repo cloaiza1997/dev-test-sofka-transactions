@@ -2,8 +2,6 @@ package org.cloaiza.transactions.repositories;
 
 import java.util.Date;
 
-import javax.xml.crypto.dsig.spec.XPathType.Filter;
-
 import org.cloaiza.transactions.models.TransactionDailySummary;
 
 import com.mongodb.client.model.Filters;
