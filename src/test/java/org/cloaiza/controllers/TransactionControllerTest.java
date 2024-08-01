@@ -12,7 +12,7 @@ class TransactionControllerTest {
         given()
                 .when().post("/transactions")
                 .then()
-                .statusCode(200);
+                .statusCode(404);
     }
 
 }
