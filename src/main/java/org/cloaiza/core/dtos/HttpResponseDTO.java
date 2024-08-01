@@ -19,4 +19,9 @@ public class HttpResponseDTO {
     public HttpResponseDTO(String message) {
         this.message = message;
     }
+
+    public HttpResponseDTO(Object data, String message) {
+        this.data = data;
+        this.message = message;
+    }
 }

@@ -4,6 +4,7 @@ import org.bson.Document;
 import org.cloaiza.transactions.dtos.TransactionDTO;
 import org.cloaiza.transactions.mappers.TransactionMapper;
 import org.cloaiza.transactions.models.Transaction;
+import org.cloaiza.transactions.models.TransactionDailySummary;
 import org.cloaiza.transactions.repositories.TransactionRepository;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -46,5 +47,9 @@ public class TransactionService {
     Transaction transaction = TransactionMapper.INSTANCE.transactionDTOToTransaction(transactionDTO);
 
     return transactionRepository.persist(transaction);
+  }
+
+  public Uni<TransactionDailySummary> getTransactionDailySummary(String summaryDate) {
+    return transactionRepository.getTransactionDailySummary(summaryDate);
   }
 }
