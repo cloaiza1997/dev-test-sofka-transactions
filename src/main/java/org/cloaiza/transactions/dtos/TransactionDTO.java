@@ -16,6 +16,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class TransactionDTO {
+    @Schema(hidden = true)
     private ObjectId id;
     @NotNull
     @Schema(example = "123")

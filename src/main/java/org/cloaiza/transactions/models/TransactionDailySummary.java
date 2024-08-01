@@ -10,7 +10,7 @@ import java.util.Date;
 
 import org.bson.types.ObjectId;
 
-@MongoEntity(collection = "transaction_daily_summary")
+@MongoEntity(collection = "transaction_daily_summaries")
 @Getter
 @Setter
 @ToString

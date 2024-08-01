@@ -18,7 +18,7 @@ import org.cloaiza.transactions.dtos.TransactionRequestCreateDTO;
 import org.cloaiza.transactions.services.TransactionService;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
-@Path("/")
+@Path("/v1/transactions")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class TransactionController {
@@ -27,27 +27,6 @@ public class TransactionController {
     TransactionService transactionService;
 
     @POST
-    @Path("/v1/transactions")
-    public Uni<HttpResponseDTO> addTransactionV1(@Valid TransactionRequestCreateDTO transactionRequestCreateDTO) {
-
-        return transactionService
-                .addTransactionV1(transactionRequestCreateDTO.getTransaction())
-                .onItem()
-                .transform(result -> {
-                    LogUtils.info(CoreConstants.TRANSACTION_CREATE_OK);
-
-                    return new HttpResponseDTO(CoreConstants.TRANSACTION_CREATE_OK);
-                })
-                .onFailure()
-                .recoverWithItem(e -> {
-                    LogUtils.error(CoreConstants.TRANSACTION_CREATE_ERROR, e);
-
-                    return new HttpResponseDTO(false, CoreConstants.TRANSACTION_CREATE_ERROR);
-                });
-    }
-
-    @POST
-    @Path("/v2/transactions")
     public Uni<HttpResponseDTO> addTransactionV2(@Valid TransactionRequestCreateDTO transactionRequestCreateDTO) {
         return transactionService
                 .addTransactionV2(transactionRequestCreateDTO.getTransaction())
@@ -66,7 +45,7 @@ public class TransactionController {
     }
 
     @GET
-    @Path("v1/transactions/summary/{date}")
+    @Path("/summary/{date}")
     public Uni<HttpResponseDTO> getTransactionDailySummary(
             @PathParam("date") @Schema(example = "2024-07-31") String date) {
 
