@@ -32,4 +32,15 @@ public class TransactionDTO {
     @NotNull
     @Schema(example = "987.65")
     private Double amount;
+
+    @Getter
+    @Setter
+    public static class TransactionGeoPositionDTO {
+        @NotNull
+        @Schema(example = "3.451647")
+        private Double latitude;
+        @NotNull
+        @Schema(example = "-76.531982")
+        private Double longitude;
+    }
 }

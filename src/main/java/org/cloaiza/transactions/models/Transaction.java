@@ -20,4 +20,11 @@ public class Transaction extends ReactivePanacheMongoEntity {
     private Long userId;
     private TransactionGeoPosition geoPosition;
     private Double amount;
+
+    @Getter
+    @Setter
+    public static class TransactionGeoPosition {
+        private Double latitude;
+        private Double longitude;
+    }
 }

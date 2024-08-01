@@ -10,9 +10,7 @@ public interface TransactionMapper {
 
   TransactionMapper INSTANCE = Mappers.getMapper(TransactionMapper.class);
 
-  // TransactionDTO to Transaction
   Transaction transactionDTOToTransaction(TransactionDTO transactionDTO);
 
-  // Transaction to TransactionDTO
   TransactionDTO transactionToTransactionDTO(Transaction transaction);
 }
