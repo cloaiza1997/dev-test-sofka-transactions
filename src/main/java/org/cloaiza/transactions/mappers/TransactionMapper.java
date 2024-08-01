@@ -10,7 +10,7 @@ public interface TransactionMapper {
 
   TransactionMapper INSTANCE = Mappers.getMapper(TransactionMapper.class);
 
-  Transaction transactionDTOToTransaction(TransactionDTO transactionDTO);
+  Transaction dtoToEntity(TransactionDTO transactionDTO);
 
-  TransactionDTO transactionToTransactionDTO(Transaction transaction);
+  TransactionDTO entityToDto(Transaction transaction);
 }

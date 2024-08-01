@@ -48,9 +48,9 @@ public class TransactionsController {
                 .addTransactionV2(transactionRequestCreateDTO.getTransaction())
                 .onItem()
                 .transform(result -> {
-                    log.info(CoreConstants.TRANSACTION_CREATE_OK + " - " + result.getId());
+                    log.info(CoreConstants.TRANSACTION_CREATE_OK);
 
-                    return new HttpResponseDTO(CoreConstants.TRANSACTION_CREATE_OK);
+                    return new HttpResponseDTO(result, CoreConstants.TRANSACTION_CREATE_OK);
                 });
     }
 
@@ -63,9 +63,13 @@ public class TransactionsController {
                 .getTransactionDailySummary(date)
                 .onItem()
                 .transform(result -> {
-                    log.info(CoreConstants.TRANSACTION_SUMMARY_OK + " - " + result.getId());
+                    String message = result == null
+                            ? CoreConstants.TRANSACTION_SUMMARY_EMPTY
+                            : CoreConstants.TRANSACTION_SUMMARY_OK;
 
-                    return new HttpResponseDTO(result, CoreConstants.TRANSACTION_SUMMARY_OK);
+                    log.info(message);
+
+                    return new HttpResponseDTO(result, message);
                 });
     }
 }

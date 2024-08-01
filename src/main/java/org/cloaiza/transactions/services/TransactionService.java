@@ -2,9 +2,9 @@ package org.cloaiza.transactions.services;
 
 import org.bson.Document;
 import org.cloaiza.transactions.dtos.TransactionDTO;
+import org.cloaiza.transactions.dtos.TransactionDailySummaryDTO;
 import org.cloaiza.transactions.mappers.TransactionMapper;
 import org.cloaiza.transactions.models.Transaction;
-import org.cloaiza.transactions.models.TransactionDailySummary;
 import org.cloaiza.transactions.repositories.TransactionRepository;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -22,6 +22,9 @@ public class TransactionService {
 
   @Inject
   TransactionRepository transactionRepository;
+
+  @Inject
+  TransactionDailySummaryService transactionDailySummaryService;
 
   @ConfigProperty(name = "quarkus.mongodb.database")
   private String database;
@@ -42,14 +45,21 @@ public class TransactionService {
         .insertOne(document);
   }
 
-  public Uni<Transaction> addTransactionV2(TransactionDTO transactionDTO) {
+  public Uni<TransactionDTO> addTransactionV2(TransactionDTO transactionDTO) {
 
-    Transaction transaction = TransactionMapper.INSTANCE.transactionDTOToTransaction(transactionDTO);
+    Transaction transaction = TransactionMapper.INSTANCE.dtoToEntity(transactionDTO);
 
-    return transactionRepository.persist(transaction);
+    return transactionRepository
+        .persist(transaction)
+        .onItem()
+        .transform(TransactionMapper.INSTANCE::entityToDto);
   }
 
-  public Uni<TransactionDailySummary> getTransactionDailySummary(String summaryDate) {
-    return transactionRepository.getTransactionDailySummary(summaryDate);
+  public Uni<TransactionDailySummaryDTO> getTransactionDailySummary(String summaryDate) {
+    return transactionRepository
+        .getTransactionDailySummary(summaryDate)
+        .onItem()
+        .ifNotNull()
+        .call(result -> transactionDailySummaryService.addTransactionDailySummary(result));
   }
 }

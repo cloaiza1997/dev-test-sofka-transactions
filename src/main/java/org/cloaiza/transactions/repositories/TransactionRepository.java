@@ -11,9 +11,8 @@ import java.util.Date;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
+import org.cloaiza.transactions.dtos.TransactionDailySummaryDTO;
 import org.cloaiza.transactions.models.Transaction;
-import org.cloaiza.transactions.models.TransactionDailySummary;
 
 import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Aggregates;
@@ -52,7 +51,16 @@ public class TransactionRepository implements ReactivePanacheMongoRepository<Tra
    * ]);
    * </pre>
    */
-  public Uni<TransactionDailySummary> getTransactionDailySummary(String summaryDate) {
+  public Uni<TransactionDailySummaryDTO> getTransactionDailySummary(String summaryDate) {
+
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+    Date date;
+
+    try {
+      date = formatter.parse(summaryDate);
+    } catch (ParseException e) {
+      return Uni.createFrom().failure(e);
+    }
 
     Bson match = Aggregates.match(
         Filters.expr(
@@ -64,23 +72,14 @@ public class TransactionRepository implements ReactivePanacheMongoRepository<Tra
                     summaryDate))));
 
     Bson group = Aggregates.group(
-        new ObjectId(),
+        null,
         Accumulators.sum("totalTransactions", 1),
         Accumulators.sum("totalAmount", "$amount"));
-
-    Date date;
-
-    try {
-      SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-      date = formatter.parse(summaryDate);
-    } catch (ParseException e) {
-      throw new RuntimeException(e);
-    }
 
     Bson addFields = Aggregates.addFields(new Field<Date>("date", date));
 
     return mongoCollection()
-        .aggregate(Arrays.asList(match, group, addFields), TransactionDailySummary.class)
+        .aggregate(Arrays.asList(match, group, addFields), TransactionDailySummaryDTO.class)
         .toUni();
   }
 }
