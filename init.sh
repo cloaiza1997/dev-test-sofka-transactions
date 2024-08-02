@@ -24,6 +24,7 @@ echo "*** rabbitmq is ready to use ***"
 echo "*** quarkus init ***"
 
 ./mvnw clean
+./mvnw install
 ./mvnw package
 docker build -f src/main/docker/Dockerfile.jvm -t quarkus/dev-test-sofka-transactions .
 docker run -d --name transactions_api -p 8080:8080 quarkus/dev-test-sofka-transactions
