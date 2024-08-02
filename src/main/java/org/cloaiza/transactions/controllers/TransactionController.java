@@ -16,6 +16,7 @@ import org.cloaiza.core.dtos.HttpResponseDTO;
 import org.cloaiza.core.utils.LogUtils;
 import org.cloaiza.transactions.dtos.TransactionRequestCreateDTO;
 import org.cloaiza.transactions.services.TransactionService;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 @Path("/v1/transactions")
@@ -27,6 +28,7 @@ public class TransactionController {
     TransactionService transactionService;
 
     @POST
+    @Operation(summary = "Servicio de creación de transacciones", description = "Registra una transacción en la base de datos y luego emite el mensaje al broker de mensajería.")
     public Uni<HttpResponseDTO> addTransactionV2(@Valid TransactionRequestCreateDTO transactionRequestCreateDTO) {
         return transactionService
                 .addTransactionV2(transactionRequestCreateDTO.getTransaction())
@@ -46,6 +48,7 @@ public class TransactionController {
 
     @GET
     @Path("/summary/{date}")
+    @Operation(summary = "Servicio de generación de reporte por fecha", description = "De acuerdo con la fecha enviada como parámetro se consultan las solicitudes de ese día para sumar el valor total diario por transacción, dicho resultado se registra en la base de datos. Como el reporte es diario, se genera un registro único por día. En caso de no existir transacciones según la fecha indicada, se genera un registro por valor de 0 para dejar trazabilidad de que en ese día no hubieron transacciones. Este servicio es utilizado para la tarea programada de generación diaria del reporte.")
     public Uni<HttpResponseDTO> getTransactionDailySummary(
             @PathParam("date") @Schema(example = "2024-07-31") String date) {
 
