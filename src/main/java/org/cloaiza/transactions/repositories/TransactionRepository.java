@@ -22,7 +22,6 @@ import com.mongodb.client.model.Filters;
 @ApplicationScoped
 public class TransactionRepository implements ReactivePanacheMongoRepository<Transaction> {
   /**
-   * 
    * <pre>
    * // MongoDB query
    * db.transactions.aggregate([
@@ -30,7 +29,7 @@ public class TransactionRepository implements ReactivePanacheMongoRepository<Tra
    *    $match: {
    *      $expr: {
    *        $eq: [
-   *          { $dateToString: { format: "%Y-%m-%d", date: "$timestamp" } },
+   *          { $dateToString: { format: "%Y-%m-%d", date: "$timestamp", timezone: "America/Bogota" } },
    *          "2024-07-31",
    *        ],
    *      },
@@ -48,7 +47,7 @@ public class TransactionRepository implements ReactivePanacheMongoRepository<Tra
    *      date: "2024-07-31",
    *    },
    *  },
-   * ]);
+   * ])
    * </pre>
    */
   public Uni<TransactionDailySummaryDTO> getTransactionDailySummary(String summaryDate) {
@@ -65,6 +64,7 @@ public class TransactionRepository implements ReactivePanacheMongoRepository<Tra
                 "$eq", Arrays.asList(
                     new Document("$dateToString",
                         new Document("format", "%Y-%m-%d")
+                            .append("timezone", CoreConstants.TIMEZONE)
                             .append("date", "$timestamp")),
                     summaryDate))));
 
