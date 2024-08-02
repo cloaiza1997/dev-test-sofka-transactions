@@ -50,4 +50,4 @@ El reporte diario se puede generar de 2 formas, ejecutando el servicio GET manua
 ## Prueba de rendimiento
 
 * Se genera un script básico en el archivo [`performance-test.sh`](performance-test.sh), que itera 10.000 ejecutando el servicio POST.
-* Se genera un archivo [`performance-test-jmeter`](performance-test-jmeter) para pruebas de rendimiento con Jmeter, para generar las 10.000 por minuto.
+* Se genera un archivo [`performance-test-jmeter.jmx`](performance-test-jmeter.jmx) para pruebas de rendimiento con Jmeter, para generar las 10.000 por minuto.
