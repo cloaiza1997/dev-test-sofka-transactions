@@ -9,7 +9,7 @@
 
 **Consideraciones previas**
 
-* Tener una equipo con Java y Docker instalado. El servicio de Docker se debe de estar ejecutando.
+* Tener un equipo con Java y Docker instalado. El servicio de Docker se debe de estar ejecutando.
 * Antes de ejecutar los comandos de inicialización, indicar en el archivo [`src/main/docker/Dockerfile.jvm`](src/main/docker/Dockerfile.jvm) la IP de la máquina donde se ejecutará el proyecto, para que desde el del API pueda haber conexión con los servicios de MongoDB y RabbitMQ. Esto en caso de que se ejecute el API desde un contenedor de Docker, en caso de iniciar el API de forma local, no sería necesaria la inclusión de la IP ya que ese archivo solo es usado al momento de la compilación.
 
     ```
@@ -44,3 +44,9 @@ El reporte diario se puede generar de 2 formas, ejecutando el servicio GET manua
 * La configuración de la frecuencia de ejecución está definida en la constante `SCHEDULER_CRON` que se encuentra en el archivo [src/main/java/org/cloaiza/core/constants/CoreConstants.java](src/main/java/org/cloaiza/core/constants/CoreConstants.java).
 * La cofiguración está dada para que la tarea se ejecute diariamente a las 00:00 horas.
 * Para efecto de las pruebas se puede modificar el valor de la frecuencia para ejecutar a una hora diferente y poder comprobar el funcionamiento. Si se hace esto se debe de volver a compilar el proyecto y subirlo de nuevo al contenedor de Docker.
+
+---
+
+## Prueba de rendimiento
+
+Se genera un script básico en el archivo [`performance-test.sh`](performance-test.sh), que itera 10.000 ejecutando el servicio POST.
